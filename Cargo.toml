@@ -1,0 +1,11 @@
+[package]
+name = "match"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+rayon = "1.6"
+nalgebra = { version = "0.31", features = ["sparse"] }
+float-ord = "0.3"
+itertools = "0.10"
+strum = { version = "0.24", features = ["derive"] }
