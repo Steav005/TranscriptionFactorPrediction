@@ -31,7 +31,13 @@ impl From<Fasta> for PyFasta {
 
 #[pyfunction]
 pub fn parse_fasta(c: &str) -> PyResult<Vec<PyFasta>> {
-    Fasta::parse_many(c)
-        .map_err(|e| PyOSError::new_err(format!("{e:?}")))
-        .map(|(_, mut p)| p.drain(..).map(PyFasta::from).collect())
+    let (rest, mut fasta) =
+        Fasta::parse_many(c).map_err(|e| PyOSError::new_err(format!("{e:?}")))?;
+    if !rest.is_empty() {
+        return Err(PyOSError::new_err(format!(
+            "Could not parse completly. {rest}"
+        )));
+    }
+
+    Ok(fasta.drain(..).map(PyFasta::from).collect())
 }

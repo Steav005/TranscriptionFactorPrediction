@@ -33,15 +33,19 @@ impl TryFrom<PyProfile> for Profile {
 
 #[pyfunction]
 pub fn parse_profile(c: &str) -> PyResult<Vec<PyProfile>> {
-    Profile::parse_many(c)
-        .map_err(|e| PyOSError::new_err(format!("{e:?}")))
-        .map(|(_, p)| {
-            p.iter()
-                .map(|(id, (css, mss))| PyProfile {
-                    id: id.to_string(),
-                    css: **css,
-                    mss: **mss,
-                })
-                .collect()
+    let (rest, mut profiles) =
+        Profile::parse_many(c).map_err(|e| PyOSError::new_err(format!("{e:?}")))?;
+    if !rest.is_empty() {
+        return Err(PyOSError::new_err(format!(
+            "Could not parse completly. {rest}"
+        )));
+    }
+    Ok(profiles
+        .drain()
+        .map(|(id, (css, mss))| PyProfile {
+            id,
+            css: *css,
+            mss: *mss,
         })
+        .collect())
 }

@@ -46,16 +46,26 @@ pub type TfpResult<T> = Result<T, TfpError>;
 impl TfpCalculator {
     pub fn add_from_profile_file<P: AsRef<Path>>(&mut self, path: P) -> TfpResult<()> {
         let c = std::fs::read_to_string(path).map_err(TfpError::FileError)?;
-        let (_, profiles) = Profile::parse_many(&c)
+        let (rest, profiles) = Profile::parse_many(&c)
             .map_err(|e| TfpError::ParseError(anyhow!("Profile parse error: {e:?}")))?;
+        if !rest.is_empty() {
+            return Err(TfpError::ParseError(anyhow!(
+                "Could not parse completly. {rest}"
+            )));
+        }
         self.profiles.extend(profiles);
         Ok(())
     }
 
     pub fn add_from_transfac_file<P: AsRef<Path>>(&mut self, path: P) -> TfpResult<()> {
         let c = std::fs::read_to_string(path).map_err(TfpError::FileError)?;
-        let (_, mut matrices) = parse_matrices(&c)
+        let (rest, mut matrices) = parse_matrices(&c)
             .map_err(|e| TfpError::ParseError(anyhow!("Transfac parse error: {e:?}")))?;
+        if !rest.is_empty() {
+            return Err(TfpError::ParseError(anyhow!(
+                "Could not parse completly. {rest}"
+            )));
+        }
         let matrices = matrices
             .drain(..)
             .map(PwmMatrix::try_from)
@@ -67,8 +77,13 @@ impl TfpCalculator {
 
     pub fn add_from_fasta_file<P: AsRef<Path>>(&mut self, path: P) -> TfpResult<()> {
         let c = std::fs::read_to_string(path).map_err(TfpError::FileError)?;
-        let (_, mut fasta) = Fasta::parse_many(&c)
+        let (rest, mut fasta) = Fasta::parse_many(&c)
             .map_err(|e| TfpError::ParseError(anyhow!("Fasta parse error: {e:?}")))?;
+        if !rest.is_empty() {
+            return Err(TfpError::ParseError(anyhow!(
+                "Could not parse completly. {rest}"
+            )));
+        }
         let seq = fasta
             .drain(..)
             .map(PlusStrand::try_from)

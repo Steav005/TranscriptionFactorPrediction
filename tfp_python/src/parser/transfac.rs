@@ -76,7 +76,13 @@ impl From<PwmMatrix> for PyPwmMatrix {
 
 #[pyfunction]
 pub fn parse_transfac(c: &str) -> PyResult<Vec<PyPwmMatrix>> {
-    let (_, mut matrices) = parse_matrices(c).map_err(|e| PyOSError::new_err(format!("{e:?}")))?;
+    let (rest, mut matrices) =
+        parse_matrices(c).map_err(|e| PyOSError::new_err(format!("{e:?}")))?;
+    if !rest.is_empty() {
+        return Err(PyOSError::new_err(format!(
+            "Could not parse completly. {rest}"
+        )));
+    }
     let mut matrices = matrices
         .drain(..)
         .map(PwmMatrix::try_from)
