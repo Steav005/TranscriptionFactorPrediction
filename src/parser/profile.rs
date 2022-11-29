@@ -1,11 +1,12 @@
 use std::collections::HashMap;
 
+use nom::branch::alt;
 use nom::bytes::complete::tag;
-use nom::character::complete::{alphanumeric1, char, line_ending, not_line_ending, space0};
+use nom::character::complete::{alphanumeric1, line_ending, not_line_ending, space1};
 use nom::combinator::{map, map_res, opt};
 use nom::multi::many0;
 use nom::number::complete::float;
-use nom::sequence::{delimited, terminated, tuple};
+use nom::sequence::{terminated, tuple};
 use nom::IResult;
 use ordered_float::NotNan;
 
@@ -26,13 +27,14 @@ impl Profile {
         map(
             tuple((
                 tag("1"),
-                delimited(space0::<&str, _>, char(','), space0),
+                // delimited(space0, char(','), space0),
+                alt((space1::<&str, _>, tag(","))),
                 map_res(float, NotNan::new),
-                delimited(space0, char(','), space0),
+                alt((space1::<&str, _>, tag(","))),
                 map_res(float, NotNan::new),
-                delimited(space0, char(','), space0),
+                alt((space1::<&str, _>, tag(","))),
                 alphanumeric1,
-                delimited(space0, char(','), space0),
+                alt((space1::<&str, _>, tag(","))),
                 not_line_ending,
             )),
             |(_, _, css, _, mss, _, _, _, id)| Profile {
