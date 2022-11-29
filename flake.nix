@@ -79,12 +79,12 @@
               # }
               {
                 name = "PIP_PREFIX";
-                value = "$PRJ_ROOT/_build/pip_packages";
+                eval = "$PRJ_ROOT/_build/pip_packages";
               }
               {
                 name = "PYTHONPATH";
                 prefix =
-                  "$PRJ_ROOT/_build/pip_packages/lib/python3.9/site-packages";
+                  "$PRJ_ROOT/_build/pip_packages/lib/python3.10/site-packages";
               }
               {
                 name = "SOURCE_DATE_EPOCH";
