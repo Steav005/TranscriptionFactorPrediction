@@ -5,4 +5,11 @@ build-backend = "maturin"
 [project]
 name = "transcription_factor_prediction"
 requires-python = ">=3.7"
-url = "https://github.com/Steav005/TranscriptionFactorPrediction"
+dynamic = [
+  "version",
+  "license"
+]
+
+[project.urls]
+"Source Code" = "https://github.com/Steav005/TranscriptionFactorPrediction"
+Issues = "https://github.com/Steav005/TranscriptionFactorPrediction/issues"

@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use itertools::Itertools;
-use nalgebra::{Const, Dynamic, Matrix, Matrix1x4, OVector, VecStorage, Vector};
+use nalgebra::{Const, Dynamic, Matrix, Matrix1x4, VecStorage, Vector};
 use ordered_float::NotNan;
 use strum::IntoEnumIterator;
 

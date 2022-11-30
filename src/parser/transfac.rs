@@ -81,12 +81,11 @@ impl TryFrom<Vec<TransfacTag>> for PwmMatrix {
             .clone()
             .max_by_key(|(i, _)| *i)
             .ok_or(TransfacParseError::NoRows)?
-            .0
-            + 1;
+            .0;
         let mut pwm = PwmMatrixInner::zeros(nrows);
 
         for (i, v) in rows {
-            pwm.set_row(i, &Matrix1x4::from_iterator(v.iter().cloned()))
+            pwm.set_row(i - 1, &Matrix1x4::from_iterator(v.iter().cloned()))
         }
 
         Ok(PwmMatrix { name, matrix: pwm })
