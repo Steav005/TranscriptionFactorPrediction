@@ -5,7 +5,7 @@ use tfp::matrix::{Float, PwmMatrix, PwmMatrixInner};
 use tfp::parser::transfac::parse_matrices;
 
 #[pyclass(name = "PwmMatrix")]
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct PyPwmMatrix {
     #[pyo3(get, set)]
     pub name: String,
@@ -46,13 +46,22 @@ impl PyPwmMatrix {
     }
 
     #[getter]
-    fn get_matrix(&self) -> [Vec<f32>; 4] {
+    fn get_matrix(&self) -> Vec<[f32; 4]> {
         self.matrix
-            .column_iter()
-            .map(|c| c.iter().cloned().map(f32::from).collect::<Vec<_>>())
+            .row_iter()
+            .map(|r| {
+                r.iter()
+                    .cloned()
+                    .map(f32::from)
+                    .collect::<Vec<_>>()
+                    .try_into()
+                    .expect("Guaranteed to be convertable")
+            })
             .collect::<Vec<_>>()
-            .try_into()
-            .expect("Guaranteed to be convertable")
+    }
+
+    pub fn __repr__(&self) -> String {
+        format!("PwmMatrix: {} {}", self.name, self.matrix)
     }
 }
 

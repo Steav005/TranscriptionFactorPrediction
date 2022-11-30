@@ -14,6 +14,7 @@ use crate::parser::transfac::parse_transfac;
 pub(crate) mod parser;
 
 #[pyclass(name = "Tfp")]
+#[derive(Debug)]
 pub struct PyTfp {
     #[pyo3(get, set)]
     sequence: String,
@@ -31,6 +32,22 @@ pub struct PyTfp {
     len: usize,
 }
 
+#[pymethods]
+impl PyTfp {
+    fn __repr__(&self) -> String {
+        format!(
+            "Tfp (sequence: {}, matrix: {}, pos: {}, strand: {}, css: {}, mss: {}, len: {})",
+            self.sequence,
+            self.matrix,
+            self.pos,
+            if self.strand { "+" } else { "-" },
+            self.css,
+            self.mss,
+            self.len
+        )
+    }
+}
+
 impl From<Tfp> for PyTfp {
     fn from(t: Tfp) -> Self {
         PyTfp {
@@ -46,7 +63,7 @@ impl From<Tfp> for PyTfp {
 }
 
 #[pyclass(name = "TfpCalculator")]
-#[derive(Default)]
+#[derive(Debug, Default)]
 pub struct PyTfpCalculator {
     calculator: TfpCalculator,
 }
@@ -56,6 +73,37 @@ impl PyTfpCalculator {
     #[new]
     fn __new__() -> Self {
         Default::default()
+    }
+
+    fn __repr__(&self) -> String {
+        let matrices = self
+            .calculator
+            .matrices
+            .iter()
+            .cloned()
+            .map(PyPwmMatrix::from)
+            .map(|m| m.__repr__())
+            .collect::<String>();
+        let sequences = self
+            .calculator
+            .sequences
+            .iter()
+            .map(|s| {
+                format!(
+                    "Fasta {} {}\n",
+                    s.name,
+                    s.seq.iter().map(|b| b.to_string()).collect::<String>()
+                )
+            })
+            .collect::<String>();
+        let profiles = self
+            .calculator
+            .profiles
+            .iter()
+            .map(|(id, (css, mss))| format!("Profile(id: {id}, css: {css}, mss: {mss})\n"))
+            .collect::<String>();
+
+        format!("TfpCalculator: \n{matrices} {sequences} {profiles} default_css_threshold: {}, default_mss_threshold: {}", self.calculator.default_css_threshold, self.calculator.default_mss_threshold)
     }
 
     #[setter]

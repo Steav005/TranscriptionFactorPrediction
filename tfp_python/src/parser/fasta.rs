@@ -3,12 +3,19 @@ use pyo3::prelude::*;
 use tfp::parser::fasta::Fasta;
 
 #[pyclass(name = "Fasta")]
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct PyFasta {
     #[pyo3(get, set)]
     pub name: String,
     #[pyo3(get, set)]
     pub seq: String,
+}
+
+#[pymethods]
+impl PyFasta {
+    fn __repr__(&self) -> String {
+        format!("Fasta {}, {}", self.name, self.seq)
+    }
 }
 
 impl From<PyFasta> for Fasta {

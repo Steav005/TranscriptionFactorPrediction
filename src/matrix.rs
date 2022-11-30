@@ -128,41 +128,41 @@ fn find_core(max_vec: &MaxVector) -> Option<(usize, Float)> {
 }
 
 fn gen_max_vector(ppm: &PpmMatrix, iv: &IvVector) -> MaxVector {
-    let max_vector = ppm
+    let max_iterator = ppm
         .row_iter()
         .zip(iv.iter())
         .map(|(r, iv)| iv * r.iter().max().expect("Guaranteed to not be 'None'"));
-    MaxVector::from_iterator(max_vector.len(), max_vector)
+    MaxVector::from_iterator(max_iterator.len(), max_iterator)
 }
 
 fn iv_min_sum(iv: &IvVector, ppm: &PpmMatrix) -> Float {
-    iv.row_iter()
+    iv.iter()
         .zip(
             ppm.row_iter()
                 .map(|r| *r.iter().min().expect("Guaranteed to not be 'None'")),
         )
-        .map(|(r, min)| r[(0, 0)] * min)
+        .map(|(r, min)| r * min)
         .sum()
 }
 
 fn iv_max_sum(iv: &IvVector, ppm: &PpmMatrix) -> Float {
-    iv.row_iter()
+    iv.iter()
         .zip(
             ppm.row_iter()
                 .map(|r| *r.iter().max().expect("Guaranteed to not be 'None'")),
         )
-        .map(|(r, max)| r[(0, 0)] * max)
+        .map(|(r, max)| r * max)
         .sum()
 }
 
 fn gen_iv(ppm: &PpmMatrix) -> IvVector {
     const FOUR: Float = unsafe { Float::new_unchecked(4.0) };
-    ppm.compress_columns(
-        OVector::zeros_generic(Dynamic::new(ppm.nrows()), Const::<1>),
-        |out, col| {
-            *out += col * (FOUR * col[(0, 0)]);
-        },
-    )
+    // TODO Circumvent clone
+    let mut iv = ppm.clone();
+    iv.iter_mut()
+        .map(|c| *c = *c * (FOUR * *c).ln())
+        .for_each(drop);
+    iv.column_sum()
 }
 
 fn to_ppm(pwm: &mut PwmMatrixInner) {

@@ -1,8 +1,8 @@
 use std::str::FromStr;
 
-use strum::{EnumIter, EnumString, ParseError};
+use strum::{Display, EnumIter, EnumString, ParseError};
 
-#[derive(Debug, EnumIter, Clone, Copy, EnumString, Hash, Eq, PartialEq)]
+#[derive(Debug, EnumIter, Clone, Copy, EnumString, Display, Hash, Eq, PartialEq)]
 pub enum Base {
     A = 0,
     C = 1,

@@ -3,7 +3,7 @@ use pyo3::prelude::*;
 use tfp::parser::profile::Profile;
 
 #[pyclass(name = "Profile")]
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct PyProfile {
     #[pyo3(get, set)]
     pub css: f32,
@@ -11,6 +11,16 @@ pub struct PyProfile {
     pub mss: f32,
     #[pyo3(get, set)]
     pub id: String,
+}
+
+#[pymethods]
+impl PyProfile {
+    fn __repr__(&self) -> String {
+        format!(
+            "Profile(id: {}, css: {}, mss: {})",
+            self.id, self.css, self.mss
+        )
+    }
 }
 
 impl TryFrom<PyProfile> for Profile {

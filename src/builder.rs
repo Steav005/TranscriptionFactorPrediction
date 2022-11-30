@@ -13,11 +13,11 @@ use crate::sequence::{MinusStrand, PlusStrand, Sequence};
 
 #[derive(Debug, Default, Clone)]
 pub struct TfpCalculator {
-    matrices: Vec<PwmMatrix>,
-    sequences: Vec<PlusStrand>,
-    profiles: HashMap<String, (Css, Mss)>,
-    default_css_threshold: Float,
-    default_mss_threshold: Float,
+    pub matrices: Vec<PwmMatrix>,
+    pub sequences: Vec<PlusStrand>,
+    pub profiles: HashMap<String, (Css, Mss)>,
+    pub default_css_threshold: Float,
+    pub default_mss_threshold: Float,
 }
 
 #[derive(Debug)]
