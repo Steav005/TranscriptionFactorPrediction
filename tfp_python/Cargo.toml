@@ -1,7 +1,8 @@
 [package]
 name = "tfp_python"
-version = "0.1.4"
-edition = "2021"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
 
 [lib]
 # The name of the native library. This is the name which will be used in Python to import the
